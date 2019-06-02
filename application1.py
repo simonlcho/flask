@@ -318,7 +318,7 @@ books = ganttChartData.to_json(orient='records')
 def api():
     return "<h1>!!Distant Reading Archive</h1><p>This site is a prototype API for distant reading of science fiction novels.</p>"
 
-@app.route('/api/v1/resources/books/all', methods=['GET'])
+@app.route('/api/GetGanttChartData', methods=['GET'])
 def api_all():
     return jsonify(books)		
 	
