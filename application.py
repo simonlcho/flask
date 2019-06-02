@@ -312,7 +312,7 @@ DateTypeOriginalPlanned = "OriginalPlanned"
 DateTypePlaceholder = "PlaceHolder"
 
 ganttChartData = GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment, InputFromDate, InputToDate)
-books = ganttChartData.to_json(orient='records')
+ganttChartDataJson = ganttChartData.to_json(orient='records')
 
 @app.route('/', methods=['GET'])
 def api():
@@ -320,7 +320,7 @@ def api():
 
 @app.route('/api/GetGanttChartData', methods=['GET'])
 def api_all():
-    return jsonify(books)		
+    return jsonify(ganttChartDataJson)		
 	
 @app.route('/api/books/', methods=['GET'])
 def api_id():
