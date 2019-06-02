@@ -322,7 +322,7 @@ def api():
 def api_all():
     return jsonify(books)		
 	
-@app.route('/api/v1/resources/books', methods=['GET'])
+@app.route('/api/books/', methods=['GET'])
 def api_id():
     # Check if an ID was provided as part of the URL.
     # If ID is provided, assign it to a variable.
