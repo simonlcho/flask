@@ -1,12 +1,16 @@
 import flask
-from flask import request, jsonify
 
 import numpy as np
 import pandas as pd
 import datetime
 
+from flask import Flask, render_template, jsonify, request
+from bokeh.plotting import figure
+from bokeh.embed import components
+from bokeh.io import show
+from bokeh.models import ColumnDataSource
+
 app = flask.Flask(__name__)
-#app.config["DEBUG"] = True
 
 def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment, InputFromDate, InputToDate):
     df = projectData.loc[(projectData['Work Package Status'] == InputWorkPackageStatus) &
@@ -281,23 +285,29 @@ def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment,
     return df1[['Name', 'Project Number', 'Project Manager', 'Program Manager', 'Location', 'CS Contact', 'Work Package Status',
         'Commited Hours', 'Start Date', 'End Date', 'Department Number', 'Start Date Type', 'End Date Type']]
 
-books = [
-    {'id': 0,
-     'title': 'A Fire Upon the Deep',
-     'author': 'Vernor Vinge',
-     'first_sentence': 'The coldsleep itself was dreamless.',
-     'year_published': '1992'},
-    {'id': 1,
-     'title': 'The Ones Who Walk Away From Omelas',
-     'author': 'Ursula K. Le Guin',
-     'first_sentence': 'With a clamor of bells that set the swallows soaring, the Festival of Summer came to the city Omelas, bright-towered by the sea.',
-     'published': '1973'},
-    {'id': 2,
-     'title': 'Dhalgren',
-     'author': 'Samuel R. Delany',
-     'first_sentence': 'to wound the autumnal city.',
-     'published': '1975'}
-]
+def GenerateGanttChart(ganttChartData):
+    source = ColumnDataSource(ganttChartData)
+
+    plot = figure(y_range=ganttChartData.Name,
+               x_axis_type='datetime',
+               x_range=(InputFromDate, InputToDate), 
+               plot_width=900, plot_height=800, toolbar_location=None,
+               title="Project Gantt Chart")
+    plot.hbar(y="Name", right="End Date", left="Start Date", height=0.5, source=source, color="firebrick")
+
+    script, div = components(plot)
+    return script, div
+
+def make_plot():
+    plot = figure(plot_height=300, sizing_mode='scale_width')
+
+    x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    y = [2**v for v in x]
+
+    plot.line(x, y, line_width=4)
+
+    script, div = components(plot)
+    return script, div
 
 projectData = pd.read_excel('construction.xlsx', 'Construction')
 
@@ -321,28 +331,11 @@ def api():
 @app.route('/api/GetGanttChartData', methods=['GET'])
 def api_all():
     return jsonify(ganttChartDataJson)		
-	
-@app.route('/api/books/', methods=['GET'])
-def api_id():
-    # Check if an ID was provided as part of the URL.
-    # If ID is provided, assign it to a variable.
-    # If no ID is provided, display an error in the browser.
-    if 'id' in request.args:
-        id = int(request.args['id'])
-    else:
-        return "Error: No id field provided. Please specify an id."
 
-    # Create an empty list for our results
-    results = []
+@app.route('/api/dashboard')
+def show_dashboard():
+    plots = []
+    plots.append(GenerateGanttChart(ganttChartData))
 
-    # Loop through the data and match results that fit the requested ID.
-    # IDs are unique, but other fields might return many results
-    for book in books:
-        if book['id'] == id:
-            results.append(book)
-
-    # Use the jsonify function from Flask to convert our list of
-    # Python dictionaries to the JSON format.
-    return jsonify(results)	
-	
-#app.run()
+    return render_template('dashboard.html', plots=plots)
+    
