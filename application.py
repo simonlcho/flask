@@ -290,52 +290,53 @@ def GenerateGanttChart(ganttChartData):
 
     plot = figure(y_range=ganttChartData.Name,
                x_axis_type='datetime',
-               x_range=(InputFromDate, InputToDate), 
-               plot_width=900, plot_height=800, toolbar_location=None,
-               title="Project Gantt Chart")
+               x_range=(inputFromDate, inputToDate), 
+               plot_width=1200, plot_height=800, toolbar_location=None
+               #,title="Project Gantt Chart"
+               )
     plot.hbar(y="Name", right="End Date", left="Start Date", height=0.5, source=source, color="firebrick")
-
-    script, div = components(plot)
-    return script, div
-
-def make_plot():
-    plot = figure(plot_height=300, sizing_mode='scale_width')
-
-    x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    y = [2**v for v in x]
-
-    plot.line(x, y, line_width=4)
 
     script, div = components(plot)
     return script, div
 
 projectData = pd.read_excel('construction.xlsx', 'Construction')
 
-InputWorkPackageStatus = 'Construction'
-InputDepartment = 'SI Civil'
-InputFromDate = datetime.date(2019, 3, 1)
-InputToDate = datetime.date(2021, 2, 28)
+inputWorkPackageStatus = 'Construction'
+inputDepartment = 'SI Civil'
+inputFromDate = datetime.date(2019, 3, 1)
+inputToDate = datetime.date(2021, 2, 28)
 
 DateTypeActual = "Actual"
 DateTypeForecast = "Forecast"
 DateTypeOriginalPlanned = "OriginalPlanned"
 DateTypePlaceholder = "PlaceHolder"
 
-ganttChartData = GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment, InputFromDate, InputToDate)
-ganttChartDataJson = ganttChartData.to_json(orient='records')
+listWorkPackageStatus = ['Pre-Construction', 'Construction', 'Completion', 'Pre-Construction, Construction, Completion', 'Pre-Construction, Construction']
+listDepartment = ['LM Civil', 'LM Elect1', 'LM Elect2', 'SI Civil', 'SI Elect', 'SI Line']
 
 @app.route('/', methods=['GET'])
 def api():
-    return "<h1>!!Distant Reading Archive</h1><p>This site is a prototype API for distant reading of science fiction novels.</p>"
+    return render_template('dashboard.html', listDepartment=listDepartment, listWorkPackageStatus=listWorkPackageStatus)
 
 @app.route('/api/GetGanttChartData', methods=['GET'])
 def api_all():
+    ganttChartData = GenerateGanttChartData(projectData, inputWorkPackageStatus, inputDepartment, inputFromDate, inputToDate)
+    ganttChartDataJson = ganttChartData.to_json(orient='records')    
     return jsonify(ganttChartDataJson)		
 
-@app.route('/api/dashboard')
+@app.route('/api/GetGanttChart')
 def show_dashboard():
+    inputWorkPackageStatus = request.args.get("WorkPackageStatus")
+    inputDepartment = request.args.get("Department")
+    ganttChartData = GenerateGanttChartData(projectData, inputWorkPackageStatus, inputDepartment, inputFromDate, inputToDate)    
+    tableHtml = ganttChartData.to_html(index=False, index_names=False)
+
     plots = []
     plots.append(GenerateGanttChart(ganttChartData))
 
-    return render_template('dashboard.html', plots=plots)
+    return render_template('dashboard.html', plots=plots, tables=[tableHtml], 
+        listDepartment=listDepartment, listWorkPackageStatus=listWorkPackageStatus, 
+        inputWorkPackageStatus=inputWorkPackageStatus, inputDepartment=inputDepartment)
+
+
     

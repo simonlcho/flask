@@ -1,8 +1,27 @@
 {% extends "layout.html" %}
 {% block body %}
+    <h3>{{"Filtering Criteria"}}</h3>
+    <form action="/api/GetGanttChart">
+        <select name="WorkPackageStatus">
+            {% for eachStatus in listWorkPackageStatus %}
+            <option value="{{eachStatus}}" {% if eachStatus == inputWorkPackageStatus %} selected {% endif %}>{{eachStatus}}</option>
+            {% endfor %}                    
+        </select>
+        <select name="Department">
+            {% for eachDepartment in listDepartment %}
+            <option value="{{eachDepartment}}" {% if eachDepartment == inputDepartment %} selected {% endif %}>{{eachDepartment}}</option>
+            {% endfor %}       
+        </select>  
+    <input type="submit" value="Gantt Chart">
+    </form>
     {% for plot in plots %}
+        <h3>{{"Project Gantt Chart"}}</h3>    
         {% for part in plot %}
             {{part | safe}}
         {% endfor %}
     {% endfor %}
+    {% for table in tables %}
+                <h3>{{"Gantt Chart Data"}}</h3>
+                {{ table|safe }}
+    {% endfor %}    
 {% endblock %}
