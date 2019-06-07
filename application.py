@@ -98,7 +98,7 @@ def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment,
 
             if not pd.isnull(df.at[i, 'Dpt 1 Committed Hrs']):
                 df.at[i, 'Commited Hours'] = df.at[i, 'Dpt 1 Committed Hrs']
-            else:
+            elif not pd.isnull(df.at[i, 'Overall Committed Hrs']):
                 df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']                    
 
         elif df.at[i, 'Dpt 2 Department'] == InputDepartment: 
@@ -157,8 +157,8 @@ def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment,
 
             if not pd.isnull(df.at[i, 'Dpt 2 Committed Hrs']):
                 df.at[i, 'Commited Hours'] = df.at[i, 'Dpt 2 Committed Hrs']
-            else:
-                df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']            
+            elif not pd.isnull(df.at[i, 'Overall Committed Hrs']):
+                df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']             
 
         elif df.at[i, 'Dpt 3 Department'] == InputDepartment: 
 
@@ -216,7 +216,7 @@ def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment,
 
             if not pd.isnull(df.at[i, 'Dpt 3 Committed Hrs']):
                 df.at[i, 'Commited Hours'] = df.at[i, 'Dpt 3 Committed Hrs']
-            else:
+            elif not pd.isnull(df.at[i, 'Overall Committed Hrs']):
                 df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']            
 
         elif df.at[i, 'Dpt 4 Department'] == InputDepartment: 
@@ -275,8 +275,8 @@ def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment,
 
             if not pd.isnull(df.at[i, 'Dpt 4 Committed Hrs']):
                 df.at[i, 'Commited Hours'] = df.at[i, 'Dpt 4 Committed Hrs']
-            else:
-                df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']            
+            elif not pd.isnull(df.at[i, 'Overall Committed Hrs']):
+                df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']              
 
         else:     
 
