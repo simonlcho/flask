@@ -313,10 +313,10 @@ def api_all():
     ganttChartDataJson = ganttChartData.to_json(orient='records')    
     return jsonify(ganttChartDataJson)		
 
-@app.route('/api/GetGanttChart')
+@app.route('/api/GetGanttChart', methods=['POST'])
 def show_dashboard():
-    inputWorkPackageStatus = request.args.get("WorkPackageStatus")
-    inputDepartment = request.args.get("Department")
+    inputWorkPackageStatus = request.form["WorkPackageStatus"]
+    inputDepartment = request.form["Department"]
     ganttChartData = GenerateGanttChartData(projectData, inputWorkPackageStatus, inputDepartment, inputFromDate, inputToDate)    
     tableHtml = ganttChartData.to_html(index=False, index_names=False)
 

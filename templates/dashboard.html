@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
     <h3>{{"Filtering Criteria"}}</h3>
-    <form action="/api/GetGanttChart">
+    <form action="/api/GetGanttChart" method="post">
         <select name="WorkPackageStatus">
             {% for eachStatus in listWorkPackageStatus %}
             <option value="{{eachStatus}}" {% if eachStatus == inputWorkPackageStatus %} selected {% endif %}>{{eachStatus}}</option>
