@@ -10,6 +10,9 @@ from bokeh.embed import components
 from bokeh.io import show
 from bokeh.models import ColumnDataSource
 
+# run under waitress
+#from waitress import serve
+
 app = flask.Flask(__name__)
 
 def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment, InputFromDate, InputToDate):
@@ -276,7 +279,8 @@ def GenerateGanttChartData(projectData, InputWorkPackageStatus, InputDepartment,
             if not pd.isnull(df.at[i, 'Dpt 4 Committed Hrs']):
                 df.at[i, 'Commited Hours'] = df.at[i, 'Dpt 4 Committed Hrs']
             elif not pd.isnull(df.at[i, 'Overall Committed Hrs']):
-                df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']              
+                df.at[i, 'Commited Hours'] = df.at[i, 'Overall Committed Hrs']   
+                           
 
         else:     
 
@@ -298,21 +302,6 @@ def GenerateGanttChart(ganttChartData):
 
     script, div = components(plot)
     return script, div
-
-projectData = pd.read_excel('construction.xlsx', 'Construction')
-
-inputWorkPackageStatus = 'Construction'
-inputDepartment = 'SI Civil'
-inputFromDate = datetime.date(2019, 3, 1)
-inputToDate = datetime.date(2021, 2, 28)
-
-DateTypeActual = "Actual"
-DateTypeForecast = "Forecast"
-DateTypeOriginalPlanned = "OriginalPlanned"
-DateTypePlaceholder = "PlaceHolder"
-
-listWorkPackageStatus = ['Pre-Construction', 'Construction', 'Completion', 'Pre-Construction, Construction, Completion', 'Pre-Construction, Construction']
-listDepartment = ['LM Civil', 'LM Elect1', 'LM Elect2', 'SI Civil', 'SI Elect', 'SI Line']
 
 @app.route('/', methods=['GET'])
 def api():
@@ -338,5 +327,21 @@ def show_dashboard():
         listDepartment=listDepartment, listWorkPackageStatus=listWorkPackageStatus, 
         inputWorkPackageStatus=inputWorkPackageStatus, inputDepartment=inputDepartment)
 
+projectData = pd.read_excel('construction.xlsx', 'Construction')
 
-    
+inputWorkPackageStatus = 'Construction'
+inputDepartment = 'SI Civil'
+inputFromDate = datetime.date(2019, 3, 1)
+inputToDate = datetime.date(2021, 2, 28)
+
+DateTypeActual = "Actual"
+DateTypeForecast = "Forecast"
+DateTypeOriginalPlanned = "OriginalPlanned"
+DateTypePlaceholder = "PlaceHolder"
+
+listWorkPackageStatus = ['Pre-Construction', 'Construction', 'Completion', 'Pre-Construction, Construction, Completion', 'Pre-Construction, Construction']
+listDepartment = ['LM Civil', 'LM Elect1', 'LM Elect2', 'SI Civil', 'SI Elect', 'SI Line']
+
+if __name__ == "__main__":
+    app.run()    
+    #serve(app, host='0.0.0.0', port=80)    
